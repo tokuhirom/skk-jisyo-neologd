@@ -8,7 +8,7 @@ Convert neologd to the SKK-JISYO format.
 
 ### required environment
 
-Perl 5.10+ and following CPAN modules.
+skktools, Perl 5.10+ and following CPAN modules.
 
     cpanm -nv LWP::UserAgent LWP::Protocol::https Lingua::JA::Regular::Unicode
 
