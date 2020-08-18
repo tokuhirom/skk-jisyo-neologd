@@ -27,3 +27,12 @@ jobs:
 
     - name: Install cpan modules
       run: sudo cpanm -nv Lingua::JA::Regular::Unicode
+
+    - name: Run script
+      run: perl download.pl
+
+    - name: Commit
+      run: git commit -a -m 'Update dictionary'
+
+    - name: push
+      run: git push origin master
