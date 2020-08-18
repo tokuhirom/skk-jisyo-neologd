@@ -32,7 +32,11 @@ jobs:
       run: perl download.pl
 
     - name: Commit
-      run: git commit -a -m 'Update dictionary'
+      run: ｜＋
+        git commit -a -m 'Update dictionary'
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
 
     - name: push
       run: git push origin master
+  
