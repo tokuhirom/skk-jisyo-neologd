@@ -6,6 +6,7 @@ use v5.10.0;
 use LWP::UserAgent;
 use Encode ();
 use Lingua::JA::Regular::Unicode qw/katakana2hiragana/;
+use List::Util qw/uniq/;
 
 binmode(STDOUT, ":utf8");
 
@@ -23,14 +24,19 @@ sub main {
     open my $ofh, '>', $ofname
         or die "Cannot open $ofname";
 
+    my %dict;
+    my $i;
     while (<$fh>) {
         chomp;
+        print "Processed $i entries\n" if $i++%100000==0;
+
         my @s = split /,/, $_;
         my ($表層形, $左文脈ID, $右文脈ID, $コスト, $品詞1, $品詞2, $品詞3, $品詞4, $品詞5, $品詞6, $原形, $読み, $発音) = split /,/, $_;
 
         next if $表層形 =~ /^[#\$\(-]/;
         # 数字から始まる表記を除外
         next if $表層形 =~ /^[0-9]/;
+        next if $表層形 =~ /^リスト::/;
         next if $品詞1 ne '名詞';
         next if $品詞2 ne '一般名詞' && $品詞2 ne '固有名詞';
         next if $品詞3 eq '地域';
@@ -61,10 +67,20 @@ sub main {
         next if $表層形 eq $読み;
 
         my $よみ = katakana2hiragana($読み);
+        next if $よみ eq $表層形;
         eval {
-            say {$ofh} Encode::encode('euc-jp', "${よみ} /${表層形}/", Encode::FB_CROAK);
+            Encode::encode('euc-jp', "${よみ} /${表層形}/", Encode::FB_CROAK); # validation for euc-jp encoding
+            push @{$dict{$よみ}}, [$表層形, $コスト];
         };
         die $@ if $@ && $@ !~ /does not map to euc-jp/;
+    }
+
+    for my $よみ (sort keys %dict) {
+        # [$表層形, $コスト];
+        my @entries = uniq map { $_->[0] } sort {
+            $a->[1] <=> $b->[1]
+        } @{$dict{$よみ}};
+        print {$ofh} Encode::encode('euc-jp', "$よみ /" . join('/', @entries) . "/\n");
     }
 
     system('skkdic-expr2 -o SKK-JISYO.neologd SKK-JISYO.neologd.src') == 0
