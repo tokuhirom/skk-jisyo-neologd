@@ -12,11 +12,11 @@ mecab-ipadic-neologd を SKK辞書形式に変換した辞書です。
 
 skktools, Perl 5.10+ and following CPAN modules.
 
-    cpanm -nv LWP::UserAgent LWP::Protocol::https Lingua::JA::Regular::Unicode
+    cpanm -nv Lingua::JA::Regular::Unicode
 
 ### Run
 
-    perl download.pl
+    perl download.pl 20200910
 
 ## Thanks to
 
