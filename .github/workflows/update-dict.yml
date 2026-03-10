@@ -37,9 +37,18 @@ jobs:
     - name: Create release
       env:
         GH_TOKEN: ${{ github.token }}
+        NEOLOGD_VERSION: ${{ inputs.neologd_version }}
       run: |
-        VERSION=$(date +'%Y.%m.%d.%H%M%S')
+        # Find next suffix: 20200910-a, 20200910-b, ...
+        LATEST=$(gh release list --limit 100 --json tagName --jq "[.[] | select(.tagName | startswith(\"${NEOLOGD_VERSION}-\")) | .tagName] | sort | last // empty")
+        if [ -z "$LATEST" ]; then
+          SUFFIX="a"
+        else
+          LAST_SUFFIX="${LATEST##*-}"
+          SUFFIX=$(echo "$LAST_SUFFIX" | tr 'a-y' 'b-z')
+        fi
+        VERSION="${NEOLOGD_VERSION}-${SUFFIX}"
         gh release create "$VERSION" \
           --title "SKK-JISYO.neologd $VERSION" \
-          --notes "Dictionary built from mecab-ipadic-neologd (seed version: ${{ inputs.neologd_version }})" \
+          --notes "Dictionary built from mecab-ipadic-neologd (seed version: ${NEOLOGD_VERSION})" \
           SKK-JISYO.neologd
