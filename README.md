@@ -1,22 +1,24 @@
 # skk-jisyo-neologd
 
-## What's this?
+mecab-ipadic-neologd を SKK辞書形式に変換した辞書です。
 
-Convert neologd to the SKK-JISYO format.
+## Download
+
+[GitHub Releases](https://github.com/tokuhirom/skk-jisyo-neologd/releases) から `SKK-JISYO.neologd` をダウンロードしてください。
 
 ## Build for yourself
 
-### required environment
+### Prerequisites
 
 skktools, Perl 5.10+ and following CPAN modules.
 
     cpanm -nv LWP::UserAgent LWP::Protocol::https Lingua::JA::Regular::Unicode
 
-### Run the commands
+### Run
 
     perl download.pl
 
-## THANKS TO
+## Thanks to
 
 This script is based on a script in the mozc-ut.
 
@@ -26,4 +28,3 @@ This script is based on a script in the mozc-ut.
 And, the dictionary was generated from mecab-ipadic-neologd.
 
  * https://github.com/neologd/mecab-ipadic-neologd
-
