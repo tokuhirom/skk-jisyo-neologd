@@ -3,19 +3,18 @@ use strict;
 use warnings;
 use utf8;
 use v5.10.0;
-use LWP::UserAgent;
 use Encode ();
 use Lingua::JA::Regular::Unicode qw/katakana2hiragana/;
 use List::Util qw/uniq/;
 
 binmode(STDOUT, ":utf8");
 
+my $neologd_version = shift @ARGV or die "Usage: $0 <neologd_version>\n";
 my $force = 0;
 
 &main; exit;
 
 sub main {
-    my $neologd_version = get_neologd_version();
     my $fname = download_dict($neologd_version, $force);
 
     open my $fh, '<:encoding(utf-8)', $fname
@@ -85,18 +84,6 @@ sub main {
 
     system('skkdic-expr2 -o SKK-JISYO.neologd SKK-JISYO.neologd.src') == 0
         or die "Cannot cleanup the dictionary";
-}
-
-sub get_neologd_version {
-    my $url = "https://github.com/neologd/mecab-ipadic-neologd/tree/master/seed";
-    my $ua = LWP::UserAgent->new();
-    my $res = $ua->get($url);
-    $res->is_success or die "Cannot get $url: " . $res->status_line;
-    if ($res->content =~ /mecab-user-dict-seed.(\S+)\.csv.xz/) {
-        return $1;
-    } else {
-        die "Cannot parse version number from $url: " . $res->content;
-    }
 }
 
 sub download_dict {
